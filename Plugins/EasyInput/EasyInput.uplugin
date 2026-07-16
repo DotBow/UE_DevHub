@@ -1,0 +1,39 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Easy Input",
+	"Description": "Wrapper for Enhanced Input system with friendly interface",
+	"Category": "Input",
+	"CreatedBy": "DotBow",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Plugins": [
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		},
+		{
+			"Name": "CommonUI",
+			"Enabled": true
+		}
+	],
+	"Modules": [
+		{
+			"Name": "EasyInput",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "EasyInputEditor",
+			"Type": "EditorNoCommandlet",
+			"LoadingPhase": "PostEngineInit"
+		}
+	]
+}

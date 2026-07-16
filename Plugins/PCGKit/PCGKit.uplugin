@@ -1,0 +1,34 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "ProtoKit",
+	"Description": "Extra nodes for PCG",
+	"Category": "Procedural",
+	"CreatedBy": "DotBow",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Plugins": [
+		{
+			"Name": "PCG",
+			"Enabled": true
+		},
+		{
+			"Name": "PCGGeometryScriptInterop",
+			"Enabled": true
+		}
+	],
+	"Modules": [
+		{
+			"Name": "PCGKit",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}

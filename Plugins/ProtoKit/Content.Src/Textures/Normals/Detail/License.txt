@@ -1,0 +1,54 @@
+Enjoy this free sample! Use it for doing a final detail pass on your props/environments/characters!
+
+If you want the other packs check: https://gumroad.com/koromoworks
+
+KoromoWorks Discord: https://discord.gg/K3h77vP
+
+Q&A:
+
+* Why the resolution is only 512x512?
+  - Because these are "Detail Normal Map" or "Secondary Maps" referred to their main use is to "add tertiary details" or "micro details" as tiling them you can achieve great amounts of details without needing the cost of a higher resolution (1024 it´s 4x the size and 2048 it´s 16x!) meaning that these are perfect for real time visualization and texturing assets like characters and props for videogames.
+
+  - So a mere 512x512 map for closeup details it´s a great way to do the final detailing optimizing before exporting it to your game engine of choice!
+
+* Why there are so many similar(but not exactly the same) maps in this pack?
+  - Because 888 is a very high number of textures to create and process only by myself, I spent several months to make them not the same thus recycling normals and combining them.
+  - I plan to update the least appealing textures as time goes on. 
+
+* Do you plan in the future to upgrade the resolution to 1k or 2k?
+  - No, upscaling the normal maps tend to have subpar results and many artifacts, in fact i´ve tested it by myself. The upgrades will be related to the quality and variety of the textures at 512x512 only, as this is the main use: "A fast and low resource consumption of adding final details to your models"
+
+* I bought a Part pack and not the complete one, i need to pay the full price if i want the Complete pack?
+  - Of course not,  remember the email used when you bought the product and i will give you the complete pack without the parts you have already, so subtract what you already have from the original price.
+
+* These are Normal Maps, why did you put Zbrush as recommended software?
+  - Because if you import the normal maps into zbrush via the alpha palette it converts them to greyscale 8 bit image, so they can be used as alphas.
+
+* My map is super blurred and lacks quality!
+  - Remember two things:
+     These are 512x512px, so relatively low resolution
+     These are meant to be tiled, obviosly at no tiling/1 tile the quality will be much lower than for example, 5-10x tiles.
+
+* In Zbrush the alphas are too sharp/intense/low res/have artifacts!
+  - This is why I made the Zbrush Macros that I included in the 888 complete pack
+  - The macros allow you with 1 click:
+     -Tile the alphas(more resolution with an increased area of effect) until 32x
+     -Blur and Blur more, 1 unit of blur and 2 units respectively(Useful for smooth the alpha and or remove artifacts!)
+     -Sharp, return the blur to 0 units, default.
+
+* In Zbrush the blur alpha + the alpha tiling macros at the same time used makes seams!
+  - This is why i´m working on a new macro to do an Alternative Tiling in Zbrush improving the seamless option in the software. 
+
+
+My social Media:
+https://www.artstation.com/koromo
+https://twitter.com/KoromoWorks
+https://www.instagram.com/koromoworks/
+https://www.youtube.com/channel/UCTrFmrfZMyHHs6uW2zYtiiw/videos
+https://www.facebook.com/Koromo3d/
+https://www.cgtrader.com/raxe3d
+     
+Stay Safe,
+Borja Amadeo Colomer Pérez
+KoromoWorks 
+

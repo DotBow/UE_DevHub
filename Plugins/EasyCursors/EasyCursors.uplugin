@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Easy Cursors",
+	"Description": "Wrapper for managing cursors via friendly interface",
+	"Category": "UI",
+	"CreatedBy": "DotBow",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "EasyCursors",
+			"Type": "EditorNoCommandlet",
+			"LoadingPhase": "PostEngineInit"
+		}
+	]
+}

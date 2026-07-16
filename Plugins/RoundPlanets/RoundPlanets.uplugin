@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "RoundPlanets",
+	"Description": "Globally apply custom forces like Round-Planet Gravity without any prerequisites on the gameplay objects",
+	"Category": "Tools",
+	"CreatedBy": "DotBow, Alban BERGERET",
+	"CreatedByURL": "",
+	"DocsURL": "https://dev.epicgames.com/community/learning/tutorials/lydy/unreal-engine-using-chaos-callbacks-for-a-custom-gravity-system-working-with-round-worlds#needforacustomplayercontroller",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "RoundPlanets",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
