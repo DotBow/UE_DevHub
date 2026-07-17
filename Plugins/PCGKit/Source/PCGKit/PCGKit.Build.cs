@@ -26,7 +26,8 @@ public class PCGKit : ModuleRules
 			"PCGGeometryScriptInterop",
 			"GeometryScriptingCore",
 			"PhysicsCore",
-			"GeometryFramework"
+			"GeometryFramework",
+			"GeometryCore"
 		});
 
 		PrivateDependencyModuleNames.AddRange(
