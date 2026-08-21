@@ -3,6 +3,7 @@
 #include "EasyPrefsSubsystem.h"
 
 #include "EasyPrefsCVars.h"
+#include "EasyPrefsSettings.h"
 
 
 void UEasyPrefsSubsystem::Initialize(
@@ -15,8 +16,12 @@ void UEasyPrefsSubsystem::Initialize(
 
 void UEasyPrefsSubsystem::ApplyAllSettigns()
 {
-	for (FEasyPrefCVar CVar : EasyPrefsCVars::AllVars)
+	if (UEasyPrefsSettings::Get())
 	{
-		CVar.ApplyCustomCVar();
+		for (const FInstancedStruct& CVar : UEasyPrefsSettings::Get()->GetCVars())
+		{
+			if (const FEasyPrefsCVar* CVarPtr = CVar.GetPtr<FEasyPrefsCVar>())
+				CVarPtr->Apply();
+		}
 	}
 }

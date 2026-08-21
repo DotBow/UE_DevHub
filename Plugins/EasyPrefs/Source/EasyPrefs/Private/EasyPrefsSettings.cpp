@@ -1,33 +1,37 @@
-// Copyright (C) Dreamer's Tail
-
+// Copyright Epic Games, Inc. All Rights Reserved.
 #include "EasyPrefsSettings.h"
-#include "Misc/ConfigUtilities.h"
+
+#if WITH_EDITOR
+#include "Misc/ConfigCacheIni.h"
+#include "Misc/Paths.h"
+#endif
 
 
 UEasyPrefsSettings::UEasyPrefsSettings()
 {
-	CategoryName = TEXT("Game");
-}
+	CVars =
+	{
+		MaxFPS,
 
-void UEasyPrefsSettings::PostInitProperties()
-{
-	Super::PostInitProperties();
+		Panini,
 
-	UE::ConfigUtilities::ApplyCVarSettingsFromIni(
-		TEXT("/Script/EasyPrefs.EasyPrefsSettings"),
-		*GEngineIni, ECVF_SetByProjectSetting);
+		ScreenPercentage,
+		UpscaleQuality,
+		UpscaleSharpeningQuality,
+
+		AntiAliasingMethod,
+		MSAACount
+	};
 }
 
 #if WITH_EDITOR
-void UEasyPrefsSettings::PostEditChangeProperty(
-	FPropertyChangedEvent& PropertyChangedEvent)
+FText UEasyPrefsSettings::GetSectionText() const
 {
-	Super::PostEditChangeProperty(PropertyChangedEvent);
+	return NSLOCTEXT("UEasyPrefsSettings", "SectionText", "Easy Prefs");
+}
 
-	if (PropertyChangedEvent.Property &&
-		PropertyChangedEvent.ChangeType != EErrorReportMode::Interactive)
-	{
-		ExportValuesToConsoleVariables(PropertyChangedEvent.Property);
-	}
+void UEasyPrefsSettings::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeChainProperty(PropertyChangedEvent);
 }
 #endif
