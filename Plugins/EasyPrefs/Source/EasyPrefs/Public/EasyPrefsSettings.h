@@ -6,17 +6,13 @@
 #include "EasyPrefsSettings.generated.h"
 
 
-UCLASS(Config=Game, DefaultConfig)
+UCLASS(Config=Engine, DefaultConfig, MinimalAPI)
 class UEasyPrefsSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
 
 public:
 	UEasyPrefsSettings();
-
-#if WITH_EDITOR
-	virtual void PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent) override;
-#endif
 
 	static const UEasyPrefsSettings* Get()
 	{
@@ -34,13 +30,9 @@ public:
 		return GetMutableDefault<UEasyPrefsSettings>();
 	}
 
-#if WITH_EDITOR
-	virtual FText GetSectionText() const override;
-#endif
-
 private:
-	UPROPERTY(meta=(BaseStruct="/Script/EasyPrefs.EasyPrefCVar", ExcludeBaseStruct))
-	TArray<FInstancedStruct> CVars;
+	UPROPERTY()
+	TArray<FName> CVars;
 
 public:
 	UPROPERTY(Config, EditAnywhere)
@@ -71,7 +63,7 @@ public:
 	FInstancedStruct MSAACount = FInstancedStruct::Make(
 		FEasyPrefsCVarInt("MSAA Count", "r.MSAACount", 4));
 
-	const TArray<FInstancedStruct>& GetCVars() const
+	const TArray<FName>& GetCVars() const
 	{
 		return CVars;
 	}
@@ -84,8 +76,14 @@ public:
 	template<typename T>
 	const T* GetCVarPtr(const int32 InCVarIdx) const
 	{
-		if (InCVarIdx >= 0 && InCVarIdx < CVars.Num())
-			return CVars[InCVarIdx].GetPtr<T>();
+		if (const FName PropertyName = GetCVarPropertyName(InCVarIdx); PropertyName != NAME_None)
+		{
+			if (const FProperty* Property = FindFieldChecked<FProperty>(StaticClass(), PropertyName))
+			{
+				if (const FInstancedStruct* InstancedStruct = Property->ContainerPtrToValuePtr<FInstancedStruct>(this))
+					return InstancedStruct->GetPtr<T>();
+			}
+		}
 
 		return nullptr;
 	}
@@ -93,17 +91,47 @@ public:
 	template<typename T>
 	T* GetCVarMutablePtr(const int32 InCVarIdx)
 	{
-		if (InCVarIdx >= 0 && InCVarIdx < CVars.Num())
-			return CVars[InCVarIdx].GetMutablePtr<T>();
+		if (const FName PropertyName = GetCVarPropertyName(InCVarIdx); PropertyName != NAME_None)
+		{
+			if (const FProperty* Property = FindFieldChecked<FProperty>(StaticClass(), PropertyName))
+			{
+				if (FInstancedStruct* InstancedStruct = Property->ContainerPtrToValuePtr<FInstancedStruct>(this))
+					return InstancedStruct->GetMutablePtr<T>();
+			}
+		}
 
 		return nullptr;
 	}
 
 	bool IsCVarChildOf(const int32 InCVarIdx, const UScriptStruct* InScriptStruct) const
 	{
-		if (InCVarIdx >= 0 && InCVarIdx < CVars.Num())
-			return CVars[InCVarIdx].GetScriptStruct() == InScriptStruct;
+		if (const FName PropertyName = GetCVarPropertyName(InCVarIdx); PropertyName != NAME_None)
+		{
+			if (const FProperty* Property = FindFieldChecked<FProperty>(StaticClass(), PropertyName))
+			{
+				if (const FInstancedStruct* InstancedStruct = Property->ContainerPtrToValuePtr<FInstancedStruct>(this))
+					return InstancedStruct->GetScriptStruct() == InScriptStruct;
+			}
+		}
 
 		return false;
+	}
+
+	void SaveCVarConfig(const int32 InCVarIdx)
+	{
+		if (const FName PropertyName = GetCVarPropertyName(InCVarIdx); PropertyName != NAME_None)
+		{
+			if (const FProperty* Property = FindFieldChecked<FProperty>(StaticClass(), PropertyName))
+				UpdateSinglePropertyInConfigFile(Property, GetDefaultConfigFilename());
+		}
+	}
+
+private:
+	FName GetCVarPropertyName(const int32 InCVarIdx) const
+	{
+		if (InCVarIdx >= 0 && InCVarIdx < CVars.Num())
+			return CVars[InCVarIdx];
+
+		return NAME_None;
 	}
 };

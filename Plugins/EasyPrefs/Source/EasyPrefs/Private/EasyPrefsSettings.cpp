@@ -1,37 +1,18 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
-#include "EasyPrefsSettings.h"
 
-#if WITH_EDITOR
-#include "Misc/ConfigCacheIni.h"
-#include "Misc/Paths.h"
-#endif
+#include "EasyPrefsSettings.h"
 
 
 UEasyPrefsSettings::UEasyPrefsSettings()
 {
 	CVars =
 	{
-		MaxFPS,
-
-		Panini,
-
-		ScreenPercentage,
-		UpscaleQuality,
-		UpscaleSharpeningQuality,
-
-		AntiAliasingMethod,
-		MSAACount
+		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, MaxFPS),
+		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, Panini),
+		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, ScreenPercentage),
+		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, UpscaleQuality),
+		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, UpscaleSharpeningQuality),
+		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, AntiAliasingMethod),
+		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, MSAACount)
 	};
 }
-
-#if WITH_EDITOR
-FText UEasyPrefsSettings::GetSectionText() const
-{
-	return NSLOCTEXT("UEasyPrefsSettings", "SectionText", "Easy Prefs");
-}
-
-void UEasyPrefsSettings::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeChainProperty(PropertyChangedEvent);
-}
-#endif

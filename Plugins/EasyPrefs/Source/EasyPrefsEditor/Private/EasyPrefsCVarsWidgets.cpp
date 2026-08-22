@@ -130,7 +130,7 @@ void SEasyPrefsCVarValue::OnIntValueChanged(int32 InValue) const
 		UEasyPrefsSettings::GetMutable()->GetCVarMutablePtr<FEasyPrefsCVarInt>(CVarIdx))
 	{
 		CVarInt->Value = InValue;
-		CVarInt->Apply();
+		UEasyPrefsSettings::GetMutable()->SaveCVarConfig(CVarIdx);
 	}
 }
 
@@ -148,8 +148,7 @@ void SEasyPrefsCVarValue::OnFloatValueChanged(float InValue) const
 	if (FEasyPrefsCVarFloat* CVarFloat =
 		UEasyPrefsSettings::GetMutable()->GetCVarMutablePtr<FEasyPrefsCVarFloat>(CVarIdx))
 	{
-		UEasyPrefsSettings::GetMutable()->Modify();
 		CVarFloat->Value = InValue;
-		CVarFloat->Apply();
+		UEasyPrefsSettings::GetMutable()->SaveCVarConfig(CVarIdx);
 	}
 }
