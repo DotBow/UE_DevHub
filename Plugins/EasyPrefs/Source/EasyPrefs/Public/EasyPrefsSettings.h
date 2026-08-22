@@ -3,6 +3,7 @@
 
 #include "EasyPrefsCVars.h"
 #include "Engine/DeveloperSettings.h"
+#include "StructUtils/InstancedStruct.h"
 #include "EasyPrefsSettings.generated.h"
 
 
@@ -32,41 +33,61 @@ public:
 
 private:
 	UPROPERTY()
-	TArray<FName> CVars;
+	TArray<FInstancedStruct> CVars;
 
 public:
-	UPROPERTY(Config, EditAnywhere)
-	FInstancedStruct MaxFPS = FInstancedStruct::Make(
-		FEasyPrefsCVarInt("Max FPS", "t.MaxFPS", 60, 1, 999));
+	UPROPERTY(Config, VisibleAnywhere)
+	int32 MaxFPS = 60;
 
-	UPROPERTY(Config, EditAnywhere)
-	FInstancedStruct Panini = FInstancedStruct::Make(
-		FEasyPrefsCVarFloat("Panini D", "r.LensDistortion.Panini.D", 0.1f, 0.f, 1.f));
+	UPROPERTY(VisibleAnywhere)
+	FInstancedStruct MaxFPSCVar = FInstancedStruct::Make(
+		FEasyPrefsCVarInt("Max FPS", "t.MaxFPS", "MaxFPS", 1, 999));
 
-	UPROPERTY(Config, EditAnywhere)
-	FInstancedStruct ScreenPercentage = FInstancedStruct::Make(
-		FEasyPrefsCVarInt("Screen Percentage", "r.ScreenPercentage", 100, 1, 100));
+	UPROPERTY(Config, VisibleAnywhere)
+	float Panini = 0.1f;
 
-	UPROPERTY(Config, EditAnywhere)
-	FInstancedStruct UpscaleQuality = FInstancedStruct::Make(
-		FEasyPrefsCVarInt("Upscale Quality", "r.Upscale.Quality", 1, 0, 5));
+	UPROPERTY(VisibleAnywhere)
+	FInstancedStruct PaniniCVar = FInstancedStruct::Make(
+		FEasyPrefsCVarFloat("Panini D", "r.LensDistortion.Panini.D", "Panini", 0.f, 1.f));
 
-	UPROPERTY(Config, EditAnywhere)
-	FInstancedStruct UpscaleSharpeningQuality = FInstancedStruct::Make(
-		FEasyPrefsCVarInt("Upscale Sharpening Quality", "r.Upscale.SharpeningQuality", 1, 0, 2));
+	UPROPERTY(Config, VisibleAnywhere)
+	int32 ScreenPercentage = 100;
 
-	UPROPERTY(Config, EditAnywhere)
-	FInstancedStruct AntiAliasingMethod = FInstancedStruct::Make(
-		FEasyPrefsCVarInt("Anti Aliasing Method", "r.AntiAliasingMethod", 3, 0, 5));
+	UPROPERTY(VisibleAnywhere)
+	FInstancedStruct ScreenPercentageCVar = FInstancedStruct::Make(
+		FEasyPrefsCVarInt("Screen Percentage", "r.ScreenPercentage", "ScreenPercentage", 1, 100));
 
-	UPROPERTY(Config, EditAnywhere)
-	FInstancedStruct MSAACount = FInstancedStruct::Make(
-		FEasyPrefsCVarInt("MSAA Count", "r.MSAACount", 4));
+	UPROPERTY(Config, VisibleAnywhere)
+	int32 UpscaleQuality = 1;
 
-	const TArray<FName>& GetCVars() const
-	{
-		return CVars;
-	}
+	UPROPERTY(VisibleAnywhere)
+	FInstancedStruct UpscaleQualityCVar = FInstancedStruct::Make(
+		FEasyPrefsCVarInt("Upscale Quality", "r.Upscale.Quality", "UpscaleQuality", 0, 5));
+
+	UPROPERTY(Config, VisibleAnywhere)
+	int32 UpscaleSharpeningQuality = 1;
+
+	UPROPERTY(VisibleAnywhere)
+	FInstancedStruct UpscaleSharpeningQualityCVar = FInstancedStruct::Make(
+		FEasyPrefsCVarInt("Upscale Sharpening Quality", "r.Upscale.SharpeningQuality", "UpscaleSharpeningQuality", 0, 2));
+
+	UPROPERTY(Config, VisibleAnywhere)
+	int32 AntiAliasingMethod = 3;
+
+	static TMap<FName, int32> AntiAliasingMethodEnum;
+
+	UPROPERTY(VisibleAnywhere)
+	FInstancedStruct AntiAliasingMethodCVar = FInstancedStruct::Make(
+		FEasyPrefsCVarEnum("Anti Aliasing Method", "r.AntiAliasingMethod", "AntiAliasingMethod", AntiAliasingMethodEnum));
+
+	UPROPERTY(Config, VisibleAnywhere)
+	int32 MSAACount = 4;
+
+	static TMap<FName, int32> MSAACountEnum;
+
+	UPROPERTY(VisibleAnywhere)
+	FInstancedStruct MSAACountCVar = FInstancedStruct::Make(
+		FEasyPrefsCVarEnum("MSAA Count", "r.MSAACount", "MSAACount", MSAACountEnum));
 
 	int32 GetNumCVars() const
 	{
@@ -76,14 +97,8 @@ public:
 	template<typename T>
 	const T* GetCVarPtr(const int32 InCVarIdx) const
 	{
-		if (const FName PropertyName = GetCVarPropertyName(InCVarIdx); PropertyName != NAME_None)
-		{
-			if (const FProperty* Property = FindFieldChecked<FProperty>(StaticClass(), PropertyName))
-			{
-				if (const FInstancedStruct* InstancedStruct = Property->ContainerPtrToValuePtr<FInstancedStruct>(this))
-					return InstancedStruct->GetPtr<T>();
-			}
-		}
+		if (InCVarIdx >= 0 && InCVarIdx < CVars.Num())
+			return CVars[InCVarIdx].GetPtr<T>();
 
 		return nullptr;
 	}
@@ -91,47 +106,37 @@ public:
 	template<typename T>
 	T* GetCVarMutablePtr(const int32 InCVarIdx)
 	{
-		if (const FName PropertyName = GetCVarPropertyName(InCVarIdx); PropertyName != NAME_None)
-		{
-			if (const FProperty* Property = FindFieldChecked<FProperty>(StaticClass(), PropertyName))
-			{
-				if (FInstancedStruct* InstancedStruct = Property->ContainerPtrToValuePtr<FInstancedStruct>(this))
-					return InstancedStruct->GetMutablePtr<T>();
-			}
-		}
+		if (InCVarIdx >= 0 && InCVarIdx < CVars.Num())
+			return CVars[InCVarIdx].GetMutablePtr<T>();
 
 		return nullptr;
 	}
 
 	bool IsCVarChildOf(const int32 InCVarIdx, const UScriptStruct* InScriptStruct) const
 	{
-		if (const FName PropertyName = GetCVarPropertyName(InCVarIdx); PropertyName != NAME_None)
-		{
-			if (const FProperty* Property = FindFieldChecked<FProperty>(StaticClass(), PropertyName))
-			{
-				if (const FInstancedStruct* InstancedStruct = Property->ContainerPtrToValuePtr<FInstancedStruct>(this))
-					return InstancedStruct->GetScriptStruct() == InScriptStruct;
-			}
-		}
+		if (InCVarIdx >= 0 && InCVarIdx < CVars.Num())
+			return CVars[InCVarIdx].GetScriptStruct() == InScriptStruct;
 
 		return false;
 	}
 
 	void SaveCVarConfig(const int32 InCVarIdx)
 	{
-		if (const FName PropertyName = GetCVarPropertyName(InCVarIdx); PropertyName != NAME_None)
+		if (InCVarIdx >= 0 && InCVarIdx < CVars.Num())
 		{
-			if (const FProperty* Property = FindFieldChecked<FProperty>(StaticClass(), PropertyName))
-				UpdateSinglePropertyInConfigFile(Property, GetDefaultConfigFilename());
+			if (const FEasyPrefsCVar* CVar = CVars[InCVarIdx].GetPtr<FEasyPrefsCVar>())
+			{
+				if (const FName PropertyName = CVar->GetPropertyName(); PropertyName != NAME_None)
+				{
+					if (const FProperty* Property = FindFieldChecked<FProperty>(StaticClass(), PropertyName))
+						UpdateSinglePropertyInConfigFile(Property, GetDefaultConfigFilename());
+				}
+			}
 		}
 	}
 
-private:
-	FName GetCVarPropertyName(const int32 InCVarIdx) const
+	const TArray<FInstancedStruct>& GetCVars() const
 	{
-		if (InCVarIdx >= 0 && InCVarIdx < CVars.Num())
-			return CVars[InCVarIdx];
-
-		return NAME_None;
+		return CVars;
 	}
 };

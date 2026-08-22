@@ -1,28 +1,32 @@
 ﻿// Copyright (C) Dreamer's Tail
 
 #pragma once
-#include "StructUtils/InstancedStruct.h"
 #include "EasyPrefsCVars.generated.h"
 
 
 USTRUCT()
-struct FEasyPrefsCVar
+struct EASYPREFS_API FEasyPrefsCVar
 {
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(Config, EditAnywhere)
+	UPROPERTY(EditAnywhere)
 	FString DisplayName;
 
-	UPROPERTY(Config, EditAnywhere)
+	UPROPERTY(EditAnywhere)
 	FString Name;
+
+	UPROPERTY(EditAnywhere)
+	FName PropertyName;
 
 public:
 	FEasyPrefsCVar(
 		const FString& InDisplayName = TEXT(""),
-		const FString& InName = TEXT(""))
+		const FString& InName = TEXT(""),
+		const FName& InPropertyName = TEXT(""))
 		: DisplayName(InDisplayName)
-		, Name(InName) {}
+		, Name(InName)
+		, PropertyName(InPropertyName) {}
 
 	virtual ~FEasyPrefsCVar() = default;
 
@@ -36,114 +40,127 @@ public:
 		return Name;
 	}
 
-	virtual FString GetValue() const
+	FName GetPropertyName() const
 	{
-		return FString(TEXT(""));
+		return PropertyName;
 	}
+
+	virtual FString GetValue() const;
 
 	virtual void Apply() const;
 };
 
 
 USTRUCT()
-struct FEasyPrefsCVarInt : public FEasyPrefsCVar
+struct EASYPREFS_API FEasyPrefsCVarInt : public FEasyPrefsCVar
 {
 	GENERATED_BODY()
 
-	UPROPERTY(Config, EditAnywhere)
-	int32 Value;
-
-	UPROPERTY(Config, EditAnywhere)
+protected:
+	UPROPERTY(EditAnywhere)
 	int32 MinValue;
 
-	UPROPERTY(Config, EditAnywhere)
+	UPROPERTY(EditAnywhere)
 	int32 MaxValue;
 
+public:
 	FEasyPrefsCVarInt(
 		const FString& InDisplayName = TEXT(""),
 		const FString& InName = TEXT(""),
-		const int32 InValue = 0,
+		const FName& InPropertyName = TEXT(""),
 		const int32 InMinValue = 0,
 		const int32 InMaxValue = 1)
 	{
 		DisplayName = InDisplayName;
 		Name = InName;
-		Value = InValue;
+		PropertyName = InPropertyName;
 		MinValue = InMinValue;
 		MaxValue = InMaxValue;
 	}
 
-	virtual FString GetValue() const override
+	virtual FString GetValue() const override;
+	int32 GetIntValue() const;
+	void SetIntValue(const int32 InValue) const;
+
+	int32 GetMinValue() const
 	{
-		return FString::FromInt(Value);
+		return MinValue;
+	}
+
+	int32 GetMaxValue() const
+	{
+		return MaxValue;
 	}
 };
 
 
 USTRUCT()
-struct FEasyPrefsCVarFloat : public FEasyPrefsCVar
+struct EASYPREFS_API FEasyPrefsCVarFloat : public FEasyPrefsCVar
 {
 	GENERATED_BODY()
 
-	UPROPERTY(Config, EditAnywhere)
-	float Value;
-
-	UPROPERTY(Config, EditAnywhere)
+protected:
+	UPROPERTY(EditAnywhere)
 	float MinValue;
 
-	UPROPERTY(Config, EditAnywhere)
+	UPROPERTY(EditAnywhere)
 	float MaxValue;
 
+public:
 	FEasyPrefsCVarFloat(
 		const FString& InDisplayName = TEXT(""),
 		const FString& InName = TEXT(""),
-		const float InValue = 0.f,
+		const FName& InPropertyName = TEXT(""),
 		const float InMinValue = 0.f,
 		const float InMaxValue = 1.f)
 	{
 		DisplayName = InDisplayName;
 		Name = InName;
-		Value = InValue;
+		PropertyName = InPropertyName;
 		MinValue = InMinValue;
 		MaxValue = InMaxValue;
 	}
 
-	virtual FString GetValue() const override
+	virtual FString GetValue() const override;
+	int32 GetFloatValue() const;
+	void SetFloatValue(const float InValue) const;
+
+	float GetMinValue() const
 	{
-		return FString::SanitizeFloat(Value);
+		return MinValue;
+	}
+
+	float GetMaxValue() const
+	{
+		return MaxValue;
 	}
 };
 
 
 USTRUCT()
-struct FEasyPrefsCVarEnum : public FEasyPrefsCVar
+struct EASYPREFS_API FEasyPrefsCVarEnum : public FEasyPrefsCVarInt
 {
 	GENERATED_BODY()
 
-	UPROPERTY(Config, EditAnywhere)
-	int32 Value;
+protected:
+	UPROPERTY(EditAnywhere)
+	TMap<FName, int32> EnumNames;
 
+public:
 	FEasyPrefsCVarEnum(
 		const FString& InDisplayName = TEXT(""),
 		const FString& InName = TEXT(""),
-		const int32 InValue = 0)
+		const FName& InPropertyName = TEXT(""),
+		const TMap<FName, int32>& InEnumNames = {})
 	{
 		DisplayName = InDisplayName;
 		Name = InName;
-		Value = InValue;
+		PropertyName = InPropertyName;
+		EnumNames = InEnumNames;
 	}
 
-	virtual FString GetValue() const override
-	{
-		return FString::FromInt(Value);
-	}
-};
-
-
-USTRUCT()
-struct FEasyPrefsCVars
-{
-	GENERATED_BODY()
-
-
+	void GetEnumNames(TArray<FName>& OutEnumNames) const;
+	int32 GetEnumInt(const FName& InEnumName) const;
+	FName GetEnumName() const;
+	void SetEnumValue(const FName& InEnumName) const;
 };

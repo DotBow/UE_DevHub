@@ -20,7 +20,8 @@ public class EasyPrefsEditor : ModuleRules
 		new string[]
 		{
 			"Core",
-			"EasyPrefs"
+			"EasyPrefs",
+			"InputCore"
 		});
 
 		PrivateDependencyModuleNames.AddRange(

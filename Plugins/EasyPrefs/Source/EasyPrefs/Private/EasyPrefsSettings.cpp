@@ -7,12 +7,33 @@ UEasyPrefsSettings::UEasyPrefsSettings()
 {
 	CVars =
 	{
-		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, MaxFPS),
-		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, Panini),
-		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, ScreenPercentage),
-		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, UpscaleQuality),
-		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, UpscaleSharpeningQuality),
-		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, AntiAliasingMethod),
-		GET_MEMBER_NAME_CHECKED(UEasyPrefsSettings, MSAACount)
+		MaxFPSCVar,
+		PaniniCVar,
+		ScreenPercentageCVar,
+		UpscaleQualityCVar,
+		UpscaleSharpeningQualityCVar,
+		AntiAliasingMethodCVar,
+		MSAACountCVar
 	};
 }
+
+
+TMap<FName, int32> UEasyPrefsSettings::AntiAliasingMethodEnum =
+{
+	{ TEXT("Disabled"), 0 },
+	{ TEXT("FXAA"),     1 },
+	{ TEXT("TAA"),      2 },
+	{ TEXT("MSAA"),     3 },
+	{ TEXT("TSR"),      4 },
+	{ TEXT("SMAA"),     5 }
+};
+
+
+TMap<FName, int32> UEasyPrefsSettings::MSAACountEnum =
+{
+	{ TEXT("Disabled (TAA)"), 0 },
+	{ TEXT("Disabled"),       1 },
+	{ TEXT("2x MSAA"),        2 },
+	{ TEXT("4x MSAA"),        4 },
+	{ TEXT("8x MSAA"),        8 }
+};

@@ -85,33 +85,63 @@ void SEasyPrefsCVarValue::Construct(const FArguments& InArg, const int32 InCVarI
 			.WidthOverride(64)
 			[
 				SNew(SSpinBox<int32>)
-				.MinValue(CVarInt->MinValue)
-				.MaxValue(CVarInt->MaxValue)
+				.MinValue(CVarInt->GetMinValue())
+				.MaxValue(CVarInt->GetMaxValue())
 				.Value_Raw(this, &SEasyPrefsCVarValue::GetIntValue)
 				.OnValueChanged_Raw(this, &SEasyPrefsCVarValue::OnIntValueChanged)
 			]
 		];
-	}
-	else
-	{
-		if (UEasyPrefsSettings::Get()->IsCVarChildOf(CVarIdx, FEasyPrefsCVarFloat::StaticStruct()))
-		{
-			const FEasyPrefsCVarFloat* CVarFloat =
-				UEasyPrefsSettings::Get()->GetCVarPtr<FEasyPrefsCVarFloat>(CVarIdx);
 
-			ChildSlot
+		return;
+	}
+
+	if (UEasyPrefsSettings::Get()->IsCVarChildOf(CVarIdx, FEasyPrefsCVarFloat::StaticStruct()))
+	{
+		const FEasyPrefsCVarFloat* CVarFloat =
+			UEasyPrefsSettings::Get()->GetCVarPtr<FEasyPrefsCVarFloat>(CVarIdx);
+
+		ChildSlot
+		[
+			SNew(SBox)
+			.WidthOverride(64)
 			[
-				SNew(SBox)
-				.WidthOverride(64)
+				SNew(SSpinBox<float>)
+				.MinValue(CVarFloat->GetMinValue())
+				.MaxValue(CVarFloat->GetMaxValue())
+				.Value_Raw(this, &SEasyPrefsCVarValue::GetFloatValue)
+				.OnValueChanged_Raw(this, &SEasyPrefsCVarValue::OnFloatValueChanged)
+			]
+		];
+
+		return;
+	}
+
+	if (UEasyPrefsSettings::Get()->IsCVarChildOf(CVarIdx, FEasyPrefsCVarEnum::StaticStruct()))
+	{
+		const FEasyPrefsCVarEnum* CVarEnum =
+			UEasyPrefsSettings::Get()->GetCVarPtr<FEasyPrefsCVarEnum>(CVarIdx);
+
+		CVarEnum->GetEnumNames(EnumNames);
+		SelectedEnumText = SNew(SEasyPrefsCVarEnumText, CVarIdx);
+
+		ChildSlot
+		[
+			SNew(SBox)
+			.WidthOverride(64)
+			[
+				SNew(SComboBox<FName>)
+				.OptionsSource(&EnumNames)
+				.InitiallySelectedItem(GetInitiallySelectedEnum())
+				.OnGenerateWidget(this, &SEasyPrefsCVarValue::OnGenerateEnumCVarRow)
+				.OnSelectionChanged(this, &SEasyPrefsCVarValue::OnEnumCVarChanged)
+				.Content()
 				[
-					SNew(SSpinBox<float>)
-					.MinValue(CVarFloat->MinValue)
-					.MaxValue(CVarFloat->MaxValue)
-					.Value_Raw(this, &SEasyPrefsCVarValue::GetFloatValue)
-					.OnValueChanged_Raw(this, &SEasyPrefsCVarValue::OnFloatValueChanged)
+					SelectedEnumText.ToSharedRef()
 				]
-			];
-		}
+			]
+		];
+
+		return;
 	}
 }
 
@@ -119,36 +149,93 @@ int32 SEasyPrefsCVarValue::GetIntValue() const
 {
 	if (const FEasyPrefsCVarInt* CVarInt =
 		UEasyPrefsSettings::Get()->GetCVarPtr<FEasyPrefsCVarInt>(CVarIdx))
-		return CVarInt->Value;
+		return CVarInt->GetIntValue();
 
 	return -1;
 }
 
 void SEasyPrefsCVarValue::OnIntValueChanged(int32 InValue) const
 {
-	if (FEasyPrefsCVarInt* CVarInt =
+	if (const FEasyPrefsCVarInt* CVarInt =
 		UEasyPrefsSettings::GetMutable()->GetCVarMutablePtr<FEasyPrefsCVarInt>(CVarIdx))
 	{
-		CVarInt->Value = InValue;
+		CVarInt->SetIntValue(InValue);
 		UEasyPrefsSettings::GetMutable()->SaveCVarConfig(CVarIdx);
+		CVarInt->Apply();
+		GEditor->RedrawAllViewports(/*bInvalidateHitProxies =*/false);
 	}
 }
 
 float SEasyPrefsCVarValue::GetFloatValue() const
 {
-	if (const FEasyPrefsCVarInt* CVarInt =
-		UEasyPrefsSettings::Get()->GetCVarPtr<FEasyPrefsCVarInt>(CVarIdx))
-		return CVarInt->Value;
+	if (const FEasyPrefsCVarFloat* CVarFloat =
+		UEasyPrefsSettings::Get()->GetCVarPtr<FEasyPrefsCVarFloat>(CVarIdx))
+		return CVarFloat->GetFloatValue();
 
 	return -1;
 }
 
 void SEasyPrefsCVarValue::OnFloatValueChanged(float InValue) const
 {
-	if (FEasyPrefsCVarFloat* CVarFloat =
+	if (const FEasyPrefsCVarFloat* CVarFloat =
 		UEasyPrefsSettings::GetMutable()->GetCVarMutablePtr<FEasyPrefsCVarFloat>(CVarIdx))
 	{
-		CVarFloat->Value = InValue;
+		CVarFloat->SetFloatValue(InValue);
 		UEasyPrefsSettings::GetMutable()->SaveCVarConfig(CVarIdx);
+		CVarFloat->Apply();
+		GEditor->RedrawAllViewports(/*bInvalidateHitProxies =*/false);
 	}
+}
+
+FName SEasyPrefsCVarValue::GetInitiallySelectedEnum() const
+{
+	if (const FEasyPrefsCVarEnum* CVarEnum =
+		UEasyPrefsSettings::Get()->GetCVarPtr<FEasyPrefsCVarEnum>(CVarIdx))
+		return CVarEnum->GetEnumName();
+
+	return TEXT("VALUE NOT FOUND");
+}
+
+TSharedRef<SWidget> SEasyPrefsCVarValue::OnGenerateEnumCVarRow(FName EnumName)
+{
+	TSharedRef<STextBlock> NewSlateObject = SNew(STextBlock).Text(FText::FromName(EnumName));
+
+	return NewSlateObject;
+}
+
+void SEasyPrefsCVarValue::OnEnumCVarChanged(const FName InEnumName, ESelectInfo::Type SelectInfo) const
+{
+	if (const FEasyPrefsCVarEnum* CVarEnum =
+		UEasyPrefsSettings::GetMutable()->GetCVarMutablePtr<FEasyPrefsCVarEnum>(CVarIdx))
+	{
+		CVarEnum->SetEnumValue(InEnumName);
+		UEasyPrefsSettings::GetMutable()->SaveCVarConfig(CVarIdx);
+		CVarEnum->Apply();
+		GEditor->RedrawAllViewports(/*bInvalidateHitProxies =*/false);
+
+		if (SelectedEnumText.IsValid())
+			SelectedEnumText->Draw();
+	}
+}
+
+
+void SEasyPrefsCVarEnumText::Construct(const FArguments& InArg, const int32 InCVarIdx)
+{
+	CVarIdx = InCVarIdx;
+
+	Draw();
+}
+
+void SEasyPrefsCVarEnumText::Draw()
+{
+	FName EnumName = NAME_None;
+
+	if (const FEasyPrefsCVarEnum* CVarEnum =
+		UEasyPrefsSettings::Get()->GetCVarPtr<FEasyPrefsCVarEnum>(CVarIdx))
+		EnumName = CVarEnum->GetEnumName();
+
+	ChildSlot
+	[
+		SNew(STextBlock).Text(FText::FromName(EnumName))
+	];
 }

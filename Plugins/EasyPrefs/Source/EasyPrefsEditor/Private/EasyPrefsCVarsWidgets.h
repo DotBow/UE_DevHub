@@ -37,10 +37,30 @@ public:
 
 private:
 	int32 CVarIdx = -1;
+	TArray<FName> EnumNames;
 
 	int32 GetIntValue() const;
 	void OnIntValueChanged(int32 InValue) const;
 
 	float GetFloatValue() const;
 	void OnFloatValueChanged(float InValue) const;
+
+	FName GetInitiallySelectedEnum() const;
+	TSharedPtr<class SEasyPrefsCVarEnumText> SelectedEnumText;
+	TSharedRef<SWidget> OnGenerateEnumCVarRow(FName EnumName);
+	void OnEnumCVarChanged(const FName InEnumName, ESelectInfo::Type SelectInfo) const;
+};
+
+
+class SEasyPrefsCVarEnumText : public SCompoundWidget
+{
+public:
+	SLATE_BEGIN_ARGS(SEasyPrefsCVarEnumText) {}
+	SLATE_END_ARGS()
+
+	void Construct(const FArguments& InArg, const int32 InCVarIdx);
+	void Draw();
+
+private:
+	int32 CVarIdx = -1;
 };
